@@ -1,7 +1,6 @@
 package service
 
 import (
-	"fmt"
 	"sync"
 
 	"github.com/giantswarm/microendpoint/service/version"
@@ -37,7 +36,6 @@ func New(config Config) (*Service, error) {
 	if config.Logger == nil {
 		return nil, microerror.Maskf(invalidConfigError, "config.Logger must not be empty")
 	}
-	config.Logger.Log("level", "debug", "message", fmt.Sprintf("creating shutdown-referrer gitCommit:%s", config.GitCommit))
 
 	if config.Flag == nil {
 		return nil, microerror.Maskf(invalidConfigError, "config.Flag must not be empty")

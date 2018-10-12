@@ -14,14 +14,10 @@ import (
 	"github.com/giantswarm/shutdown-deferrer/service"
 )
 
-const (
-	notAvailable = "n/a"
-)
-
 var (
 	description = "The shutdown deferrer is a service monitoring DrainerConfig status for POD that it's running within. It serves as a gatekeeper for POD termination"
 	f           = flag.New()
-	gitCommit   = notAvailable
+	gitCommit   = "n/a"
 	name        = "shutdown-deferrer"
 	source      = "https://github.com/giantswarm/shutdown-deferrer"
 )
