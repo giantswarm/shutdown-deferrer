@@ -59,6 +59,7 @@ func New(config Config) (*Server, error) {
 			Viper:       config.Viper,
 
 			Endpoints: []microserver.Endpoint{
+				endpointCollection.Deferrer,
 				endpointCollection.Healthz,
 				endpointCollection.Version,
 			},

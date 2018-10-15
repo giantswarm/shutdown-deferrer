@@ -6,6 +6,7 @@ import (
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
 
+	"github.com/giantswarm/shutdown-deferrer/server/endpoint/deferrer"
 	"github.com/giantswarm/shutdown-deferrer/service"
 )
 
@@ -15,12 +16,25 @@ type Config struct {
 }
 
 type Endpoint struct {
-	Healthz *healthz.Endpoint
-	Version *version.Endpoint
+	Deferrer *deferrer.Endpoint
+	Healthz  *healthz.Endpoint
+	Version  *version.Endpoint
 }
 
 func New(config Config) (*Endpoint, error) {
 	var err error
+
+	var deferrerEndpoint *deferrer.Endpoint
+	{
+		c := deferrer.Config{
+			Logger: config.Logger,
+		}
+
+		deferrerEndpoint, err = deferrer.New(c)
+		if err != nil {
+			return nil, microerror.Mask(err)
+		}
+	}
 
 	var healthzEndpoint *healthz.Endpoint
 	{
@@ -48,8 +62,9 @@ func New(config Config) (*Endpoint, error) {
 	}
 
 	e := &Endpoint{
-		Healthz: healthzEndpoint,
-		Version: versionEndpoint,
+		Deferrer: deferrerEndpoint,
+		Healthz:  healthzEndpoint,
+		Version:  versionEndpoint,
 	}
 
 	return e, nil
