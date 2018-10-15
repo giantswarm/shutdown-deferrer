@@ -4,4 +4,4 @@ RUN apk add --no-cache ca-certificates
 
 ADD ./shutdown-deferrer /shutdown-deferrer
 
-ENTRYPOINT ["/shutdown-deferrer"]
+ENTRYPOINT ["/shutdown-deferrer", "daemon"]
