@@ -3,12 +3,16 @@ package service
 import (
 	"sync"
 
+	"github.com/giantswarm/apiextensions/pkg/clientset/versioned"
 	"github.com/giantswarm/microendpoint/service/version"
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
+	"github.com/giantswarm/operatorkit/client/k8srestconfig"
 	"github.com/spf13/viper"
+	"k8s.io/client-go/rest"
 
 	"github.com/giantswarm/shutdown-deferrer/flag"
+	"github.com/giantswarm/shutdown-deferrer/service/deferrer"
 )
 
 // Config represents the configuration used to create a new service.
@@ -26,7 +30,8 @@ type Config struct {
 
 // Service is a type providing implementation of microkit service interface.
 type Service struct {
-	Version *version.Service
+	Deferrer *deferrer.Service
+	Version  *version.Service
 
 	bootOnce sync.Once
 }
@@ -34,34 +39,74 @@ type Service struct {
 // New creates a new service with given configuration.
 func New(config Config) (*Service, error) {
 	if config.Logger == nil {
-		return nil, microerror.Maskf(invalidConfigError, "config.Logger must not be empty")
+		return nil, microerror.Maskf(invalidConfigError, "%T.Logger must not be empty", config)
 	}
 
 	if config.Flag == nil {
-		return nil, microerror.Maskf(invalidConfigError, "config.Flag must not be empty")
+		return nil, microerror.Maskf(invalidConfigError, "%T.Flag must not be empty", config)
 	}
 	if config.Viper == nil {
-		return nil, microerror.Maskf(invalidConfigError, "config.Viper must not be empty")
+		return nil, microerror.Maskf(invalidConfigError, "%T.Viper must not be empty", config)
 	}
 
 	var err error
+
+	var restConfig *rest.Config
+	{
+		c := k8srestconfig.Config{
+			Logger: config.Logger,
+
+			Address:   config.Viper.GetString(config.Flag.Service.Kubernetes.Address),
+			InCluster: config.Viper.GetBool(config.Flag.Service.Kubernetes.InCluster),
+			TLS: k8srestconfig.TLSClientConfig{
+				CAFile:  config.Viper.GetString(config.Flag.Service.Kubernetes.TLS.CAFile),
+				CrtFile: config.Viper.GetString(config.Flag.Service.Kubernetes.TLS.CrtFile),
+				KeyFile: config.Viper.GetString(config.Flag.Service.Kubernetes.TLS.KeyFile),
+			},
+		}
+
+		restConfig, err = k8srestconfig.New(c)
+		if err != nil {
+			panic(err)
+		}
+	}
+
+	g8sClient, err := versioned.NewForConfig(restConfig)
+	if err != nil {
+		panic(err)
+	}
+
+	var deferrerService *deferrer.Service
+	{
+		c := deferrer.Config{
+			G8sClient: g8sClient,
+			Logger:    config.Logger,
+		}
+
+		deferrerService, err = deferrer.New(c)
+		if err != nil {
+			return nil, microerror.Mask(err)
+		}
+	}
+
 	var versionService *version.Service
 	{
-		versionConfig := version.Config{
+		c := version.Config{
 			Description: config.Description,
 			GitCommit:   config.GitCommit,
 			Name:        config.ProjectName,
 			Source:      config.Source,
 		}
 
-		versionService, err = version.New(versionConfig)
+		versionService, err = version.New(c)
 		if err != nil {
 			return nil, microerror.Mask(err)
 		}
 	}
 
 	s := &Service{
-		Version: versionService,
+		Deferrer: deferrerService,
+		Version:  versionService,
 
 		bootOnce: sync.Once{},
 	}
