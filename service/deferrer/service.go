@@ -105,7 +105,7 @@ func (s *Service) ShouldDefer(ctx context.Context) (bool, error) {
 func (s *Service) getPodName() (string, error) {
 	podName := os.Getenv(EnvKeyMyPodName)
 	if podName == "" {
-		return "", microerror.Maskf(invalidConfigError, "pod name not present in runtime")
+		return "", microerror.Maskf(invalidConfigError, "pod name not present in runtime - make sure $%s is set", EnvKeyMyPodName)
 	}
 
 	return podName, nil
@@ -114,7 +114,7 @@ func (s *Service) getPodName() (string, error) {
 func (s *Service) getPodNamespace() (string, error) {
 	podNamespace := os.Getenv(EnvKeyMyPodNamespace)
 	if podNamespace == "" {
-		return "", microerror.Maskf(invalidConfigError, "pod namespace not present in runtime")
+		return "", microerror.Maskf(invalidConfigError, "pod namespace not present in runtime - make sure $%s is set", EnvKeyMyPodNamespace)
 	}
 
 	return podNamespace, nil
