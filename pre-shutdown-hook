@@ -18,5 +18,5 @@ do
     sleep $poll_interval
     defer=$(/usr/bin/curl -qsS $shutdown_deferrer_url)
     echo "GET /v1/defer: $defer"
-    poll_timeout=$(/bin/expr $poll_timeout - $poll_interval)
+    poll_timeout=$(/usr/bin/expr $poll_timeout - $poll_interval)
 done
