@@ -20,3 +20,5 @@ do
     echo "GET /v1/defer: $defer"
     poll_timeout=$(/usr/bin/expr $poll_timeout - $poll_interval)
 done
+
+exit 0
