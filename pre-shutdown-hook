@@ -25,7 +25,7 @@ done
 
 # Small delay before exit so that k8s-kvm preStop hook has chance to do last
 # defer query.
-sleep (/usr/bin/expr $poll_interval + 1)
+sleep $(/usr/bin/expr $poll_interval + 1)
 
 # Return successful exit status to k8s
 exit 0
