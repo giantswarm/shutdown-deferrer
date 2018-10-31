@@ -9,7 +9,7 @@ fi
 # In order to guarantee correct behavior, this poll_interval should be equal to
 # one defined in k8s-kvm qemu-shutdown script.
 poll_interval=5
-poll_timeout=600
+poll_timeout=120
 shutdown_deferrer_url=$1
 
 # Poll shutdown-deferrer service in order to wait for proper node draining
