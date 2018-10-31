@@ -21,4 +21,5 @@ do
     poll_timeout=$(/usr/bin/expr $poll_timeout - $poll_interval)
 done
 
+# Return successful exit status to k8s
 exit 0
