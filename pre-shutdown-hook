@@ -6,6 +6,8 @@ then
     exit 1
 fi
 
+# In order to guarantee correct behavior, this poll_interval should be equal to
+# one defined in k8s-kvm qemu-shutdown script.
 poll_interval=5
 poll_timeout=600
 shutdown_deferrer_url=$1
@@ -20,6 +22,10 @@ do
     echo "GET /v1/defer: $defer"
     poll_timeout=$(/usr/bin/expr $poll_timeout - $poll_interval)
 done
+
+# Small delay before exit so that k8s-kvm preStop hook has chance to do last
+# defer query.
+sleep (/usr/bin/expr $poll_interval + 1)
 
 # Return successful exit status to k8s
 exit 0
