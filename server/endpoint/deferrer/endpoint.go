@@ -2,10 +2,12 @@ package deferrer
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
+	"github.com/giantswarm/shutdown-deferrer/service/deferrer"
 	kitendpoint "github.com/go-kit/kit/endpoint"
 	kithttp "github.com/go-kit/kit/transport/http"
 )
@@ -22,22 +24,28 @@ const (
 // Config represents the configuration used to create a lister endpoint.
 type Config struct {
 	// Dependencies.
-	Logger micrologger.Logger
+	Deferrer *deferrer.Service
+	Logger   micrologger.Logger
 }
 
 type Endpoint struct {
-	logger micrologger.Logger
+	deferrer *deferrer.Service
+	logger   micrologger.Logger
 }
 
 // New creates a new configured lister object.
 func New(config Config) (*Endpoint, error) {
 	// Dependencies.
+	if config.Deferrer == nil {
+		return nil, microerror.Maskf(invalidConfigError, "%T.Deferrer must not be empty", config)
+	}
 	if config.Logger == nil {
 		return nil, microerror.Maskf(invalidConfigError, "%T.Logger must not be empty", config)
 	}
 
 	e := &Endpoint{
-		logger: config.Logger,
+		deferrer: config.Deferrer,
+		logger:   config.Logger,
 	}
 
 	return e, nil
@@ -64,7 +72,11 @@ func (e *Endpoint) Encoder() kithttp.EncodeResponseFunc {
 
 func (e *Endpoint) Endpoint() kitendpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
-		return []byte("no"), nil
+		response, err := e.deferrer.ShouldDefer(ctx)
+		if err != nil {
+			return nil, microerror.Mask(err)
+		}
+		return []byte(fmt.Sprintf("%t", response)), nil
 	}
 }
 

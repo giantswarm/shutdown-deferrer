@@ -27,7 +27,8 @@ func New(config Config) (*Endpoint, error) {
 	var deferrerEndpoint *deferrer.Endpoint
 	{
 		c := deferrer.Config{
-			Logger: config.Logger,
+			Deferrer: config.Service.Deferrer,
+			Logger:   config.Logger,
 		}
 
 		deferrerEndpoint, err = deferrer.New(c)
