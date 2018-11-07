@@ -37,6 +37,8 @@ func main() {
 			fmt.Printf("Catched SIGTERM, exiting\n")
 			os.Exit(0)
 		}
+		// for debug reasons if we catch some other signal
+		fmt.Printf("Catched signal %s | %#v\n", sig, sig)
 	}()
 
 	err := mainWithError()
