@@ -32,11 +32,9 @@ func main() {
 	go func() {
 		sig := <-signalChannel
 		switch sig {
-		case os.Interrupt:
-			//handle SIGINT
 		case syscall.SIGTERM:
 			//handle SIGTERM
-			fmt.Printf("Catched SIGTERM, exiting \n")
+			fmt.Printf("Catched SIGTERM, exiting\n")
 			os.Exit(0)
 		}
 	}()
