@@ -12,6 +12,9 @@ import (
 	"github.com/giantswarm/shutdown-deferrer/flag"
 	"github.com/giantswarm/shutdown-deferrer/server"
 	"github.com/giantswarm/shutdown-deferrer/service"
+	"os"
+	"os/signal"
+	"syscall"
 )
 
 var (
@@ -23,6 +26,21 @@ var (
 )
 
 func main() {
+
+	signalChannel := make(chan os.Signal, 2)
+	signal.Notify(signalChannel, os.Interrupt, syscall.SIGTERM)
+	go func() {
+		sig := <-signalChannel
+		switch sig {
+		case os.Interrupt:
+			//handle SIGINT
+		case syscall.SIGTERM:
+			//handle SIGTERM
+			fmt.Printf("Catched SIGTERM, exiting \n")
+			os.Exit(0)
+		}
+	}()
+
 	err := mainWithError()
 	if err != nil {
 		panic(fmt.Sprintf("%#v\n", err))
