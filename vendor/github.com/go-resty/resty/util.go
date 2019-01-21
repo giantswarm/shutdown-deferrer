@@ -1,4 +1,4 @@
-// Copyright (c) 2015-2018 Jeevanandam M (jeeva@myjeeva.com), All rights reserved.
+// Copyright (c) 2015-2019 Jeevanandam M (jeeva@myjeeva.com), All rights reserved.
 // resty source code and usage is governed by a MIT style
 // license that can be found in the LICENSE file.
 
@@ -229,7 +229,7 @@ func createDirectory(dir string) (err error) {
 }
 
 func canJSONMarshal(contentType string, kind reflect.Kind) bool {
-	return IsJSONType(contentType) && (kind == reflect.Struct || kind == reflect.Map)
+	return IsJSONType(contentType) && (kind == reflect.Struct || kind == reflect.Map || kind == reflect.Slice)
 }
 
 func functionName(i interface{}) string {

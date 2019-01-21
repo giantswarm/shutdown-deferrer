@@ -1,5 +1,5 @@
 /*
-Copyright 2018 Giant Swarm GmbH.
+Copyright 2019 Giant Swarm GmbH.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -20,6 +20,8 @@ package fake
 
 import (
 	clientset "github.com/giantswarm/apiextensions/pkg/clientset/versioned"
+	applicationv1alpha1 "github.com/giantswarm/apiextensions/pkg/clientset/versioned/typed/application/v1alpha1"
+	fakeapplicationv1alpha1 "github.com/giantswarm/apiextensions/pkg/clientset/versioned/typed/application/v1alpha1/fake"
 	corev1alpha1 "github.com/giantswarm/apiextensions/pkg/clientset/versioned/typed/core/v1alpha1"
 	fakecorev1alpha1 "github.com/giantswarm/apiextensions/pkg/clientset/versioned/typed/core/v1alpha1/fake"
 	examplev1alpha1 "github.com/giantswarm/apiextensions/pkg/clientset/versioned/typed/example/v1alpha1"
@@ -45,9 +47,10 @@ func NewSimpleClientset(objects ...runtime.Object) *Clientset {
 		}
 	}
 
-	fakePtr := testing.Fake{}
-	fakePtr.AddReactor("*", "*", testing.ObjectReaction(o))
-	fakePtr.AddWatchReactor("*", func(action testing.Action) (handled bool, ret watch.Interface, err error) {
+	cs := &Clientset{}
+	cs.discovery = &fakediscovery.FakeDiscovery{Fake: &cs.Fake}
+	cs.AddReactor("*", "*", testing.ObjectReaction(o))
+	cs.AddWatchReactor("*", func(action testing.Action) (handled bool, ret watch.Interface, err error) {
 		gvr := action.GetResource()
 		ns := action.GetNamespace()
 		watch, err := o.Watch(gvr, ns)
@@ -57,7 +60,7 @@ func NewSimpleClientset(objects ...runtime.Object) *Clientset {
 		return true, watch, nil
 	})
 
-	return &Clientset{fakePtr, &fakediscovery.FakeDiscovery{Fake: &fakePtr}}
+	return cs
 }
 
 // Clientset implements clientset.Interface. Meant to be embedded into a
@@ -73,6 +76,16 @@ func (c *Clientset) Discovery() discovery.DiscoveryInterface {
 }
 
 var _ clientset.Interface = &Clientset{}
+
+// ApplicationV1alpha1 retrieves the ApplicationV1alpha1Client
+func (c *Clientset) ApplicationV1alpha1() applicationv1alpha1.ApplicationV1alpha1Interface {
+	return &fakeapplicationv1alpha1.FakeApplicationV1alpha1{Fake: &c.Fake}
+}
+
+// Application retrieves the ApplicationV1alpha1Client
+func (c *Clientset) Application() applicationv1alpha1.ApplicationV1alpha1Interface {
+	return &fakeapplicationv1alpha1.FakeApplicationV1alpha1{Fake: &c.Fake}
+}
 
 // CoreV1alpha1 retrieves the CoreV1alpha1Client
 func (c *Clientset) CoreV1alpha1() corev1alpha1.CoreV1alpha1Interface {

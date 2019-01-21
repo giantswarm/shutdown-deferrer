@@ -1,5 +1,5 @@
 /*
-Copyright 2018 Giant Swarm GmbH.
+Copyright 2019 Giant Swarm GmbH.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -62,7 +62,7 @@ func (c *FakeDrainerConfigs) List(opts v1.ListOptions) (result *v1alpha1.Drainer
 	if label == nil {
 		label = labels.Everything()
 	}
-	list := &v1alpha1.DrainerConfigList{}
+	list := &v1alpha1.DrainerConfigList{ListMeta: obj.(*v1alpha1.DrainerConfigList).ListMeta}
 	for _, item := range obj.(*v1alpha1.DrainerConfigList).Items {
 		if label.Matches(labels.Set(item.Labels)) {
 			list.Items = append(list.Items, item)
@@ -100,6 +100,18 @@ func (c *FakeDrainerConfigs) Update(drainerConfig *v1alpha1.DrainerConfig) (resu
 	return obj.(*v1alpha1.DrainerConfig), err
 }
 
+// UpdateStatus was generated because the type contains a Status member.
+// Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
+func (c *FakeDrainerConfigs) UpdateStatus(drainerConfig *v1alpha1.DrainerConfig) (*v1alpha1.DrainerConfig, error) {
+	obj, err := c.Fake.
+		Invokes(testing.NewUpdateSubresourceAction(drainerconfigsResource, "status", c.ns, drainerConfig), &v1alpha1.DrainerConfig{})
+
+	if obj == nil {
+		return nil, err
+	}
+	return obj.(*v1alpha1.DrainerConfig), err
+}
+
 // Delete takes name of the drainerConfig and deletes it. Returns an error if one occurs.
 func (c *FakeDrainerConfigs) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
@@ -119,7 +131,7 @@ func (c *FakeDrainerConfigs) DeleteCollection(options *v1.DeleteOptions, listOpt
 // Patch applies the patch and returns the patched drainerConfig.
 func (c *FakeDrainerConfigs) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.DrainerConfig, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewPatchSubresourceAction(drainerconfigsResource, c.ns, name, data, subresources...), &v1alpha1.DrainerConfig{})
+		Invokes(testing.NewPatchSubresourceAction(drainerconfigsResource, c.ns, name, pt, data, subresources...), &v1alpha1.DrainerConfig{})
 
 	if obj == nil {
 		return nil, err
