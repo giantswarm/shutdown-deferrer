@@ -1,5 +1,5 @@
 /*
-Copyright 2018 Giant Swarm GmbH.
+Copyright 2019 Giant Swarm GmbH.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -62,7 +62,7 @@ func (c *FakeNodeConfigs) List(opts v1.ListOptions) (result *v1alpha1.NodeConfig
 	if label == nil {
 		label = labels.Everything()
 	}
-	list := &v1alpha1.NodeConfigList{}
+	list := &v1alpha1.NodeConfigList{ListMeta: obj.(*v1alpha1.NodeConfigList).ListMeta}
 	for _, item := range obj.(*v1alpha1.NodeConfigList).Items {
 		if label.Matches(labels.Set(item.Labels)) {
 			list.Items = append(list.Items, item)
@@ -100,6 +100,18 @@ func (c *FakeNodeConfigs) Update(nodeConfig *v1alpha1.NodeConfig) (result *v1alp
 	return obj.(*v1alpha1.NodeConfig), err
 }
 
+// UpdateStatus was generated because the type contains a Status member.
+// Add a +genclient:noStatus comment above the type to avoid generating UpdateStatus().
+func (c *FakeNodeConfigs) UpdateStatus(nodeConfig *v1alpha1.NodeConfig) (*v1alpha1.NodeConfig, error) {
+	obj, err := c.Fake.
+		Invokes(testing.NewUpdateSubresourceAction(nodeconfigsResource, "status", c.ns, nodeConfig), &v1alpha1.NodeConfig{})
+
+	if obj == nil {
+		return nil, err
+	}
+	return obj.(*v1alpha1.NodeConfig), err
+}
+
 // Delete takes name of the nodeConfig and deletes it. Returns an error if one occurs.
 func (c *FakeNodeConfigs) Delete(name string, options *v1.DeleteOptions) error {
 	_, err := c.Fake.
@@ -119,7 +131,7 @@ func (c *FakeNodeConfigs) DeleteCollection(options *v1.DeleteOptions, listOption
 // Patch applies the patch and returns the patched nodeConfig.
 func (c *FakeNodeConfigs) Patch(name string, pt types.PatchType, data []byte, subresources ...string) (result *v1alpha1.NodeConfig, err error) {
 	obj, err := c.Fake.
-		Invokes(testing.NewPatchSubresourceAction(nodeconfigsResource, c.ns, name, data, subresources...), &v1alpha1.NodeConfig{})
+		Invokes(testing.NewPatchSubresourceAction(nodeconfigsResource, c.ns, name, pt, data, subresources...), &v1alpha1.NodeConfig{})
 
 	if obj == nil {
 		return nil, err
