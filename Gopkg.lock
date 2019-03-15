@@ -104,8 +104,13 @@
 [[projects]]
   branch = "master"
   name = "github.com/giantswarm/operatorkit"
-  packages = ["client/k8srestconfig"]
-  revision = "204721021837676ee3e6ee110ae58ec2e2b0d0c0"
+  packages = [
+    "client/k8srestconfig",
+    "flag/service/kubernetes",
+    "flag/service/kubernetes/tls",
+    "flag/service/kubernetes/watch"
+  ]
+  revision = "67aba158b01a7eb22405c4a5ad643853f29cb5f3"
 
 [[projects]]
   branch = "master"
@@ -221,6 +226,12 @@
   ]
   revision = "8cb6e5b959231cc1119e43259c4a608f9c51a241"
   version = "v1.0.0"
+
+[[projects]]
+  name = "github.com/imdario/mergo"
+  packages = ["."]
+  revision = "7c29201646fa3de8506f701213473dd407f19646"
+  version = "v0.3.7"
 
 [[projects]]
   name = "github.com/inconshreveable/mousetrap"
@@ -586,12 +597,17 @@
     "rest",
     "rest/watch",
     "testing",
+    "tools/auth",
+    "tools/clientcmd",
     "tools/clientcmd/api",
+    "tools/clientcmd/api/latest",
+    "tools/clientcmd/api/v1",
     "tools/metrics",
     "transport",
     "util/cert",
     "util/connrotation",
     "util/flowcontrol",
+    "util/homedir",
     "util/integer"
   ]
   revision = "6bf63545bd0257ed9e701ad95307ffa51b4407c0"
@@ -618,6 +634,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "2a9d8d908f200460972b74db18a282703b8eb5a828209eb09f0b46b7d3eae6e7"
+  inputs-digest = "fbc90a6e6e365f34d81f140f7dd2dafd96b44cba2493ec2e4e2596efc71a23db"
   solver-name = "gps-cdcl"
   solver-version = 1
