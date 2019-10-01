@@ -10,16 +10,13 @@ import (
 	"github.com/spf13/viper"
 
 	"github.com/giantswarm/shutdown-deferrer/flag"
+	"github.com/giantswarm/shutdown-deferrer/pkg/project"
 	"github.com/giantswarm/shutdown-deferrer/server"
 	"github.com/giantswarm/shutdown-deferrer/service"
 )
 
 var (
-	description = "The shutdown deferrer is a service monitoring DrainerConfig status for POD that it's running within. It serves as a gatekeeper for POD termination"
-	f           = flag.New()
-	gitCommit   = "n/a"
-	name        = "shutdown-deferrer"
-	source      = "https://github.com/giantswarm/shutdown-deferrer"
+	f = flag.New()
 )
 
 func main() {
@@ -50,10 +47,11 @@ func mainWithError() (err error) {
 				Logger: newLogger,
 				Viper:  v,
 
-				Description: description,
-				GitCommit:   gitCommit,
-				ProjectName: name,
-				Source:      source,
+				Description: project.Description(),
+				GitCommit:   project.GitSHA(),
+				ProjectName: project.Name(),
+				Source:      project.Source(),
+				Version:     project.Version(),
 			}
 
 			newService, err = service.New(serviceConfig)
@@ -72,7 +70,7 @@ func mainWithError() (err error) {
 				Service: newService,
 				Viper:   v,
 
-				ProjectName: name,
+				ProjectName: project.Name(),
 			}
 
 			newServer, err = server.New(c)
@@ -91,10 +89,11 @@ func mainWithError() (err error) {
 			Logger:        newLogger,
 			ServerFactory: newServerFactory,
 
-			Description: description,
-			GitCommit:   gitCommit,
-			Name:        name,
-			Source:      source,
+			Description: project.Description(),
+			GitCommit:   project.GitSHA(),
+			Name:        project.Name(),
+			Source:      project.Source(),
+			Version:     project.Version(),
 		}
 
 		newCommand, err = command.New(c)
