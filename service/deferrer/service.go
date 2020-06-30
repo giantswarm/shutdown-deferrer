@@ -59,7 +59,7 @@ func (s *Service) ShouldDefer(ctx context.Context) (bool, error) {
 
 	var podName, podNamespace string
 	{
-		s.logger.LogCtx(ctx, "level", "debug", "message", "finding pod name and namespace")
+		_ = s.logger.LogCtx(ctx, "level", "debug", "message", "finding pod name and namespace")
 
 		podName, err = s.getPodName()
 		if err != nil {
@@ -70,45 +70,45 @@ func (s *Service) ShouldDefer(ctx context.Context) (bool, error) {
 			return false, microerror.Mask(err)
 		}
 
-		s.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("found pod name and namespace: %s, %s", podName, podNamespace))
+		_ = s.logger.LogCtx(ctx, "level", "debug", "message", fmt.Sprintf("found pod name and namespace: %s, %s", podName, podNamespace))
 	}
 
 	var drainerConfig *v1alpha1.DrainerConfig
 	{
-		s.logger.LogCtx(ctx, "level", "debug", "message", "finding drainerconfig for pod")
+		_ = s.logger.LogCtx(ctx, "level", "debug", "message", "finding drainerconfig for pod")
 
 		drainerConfig, err = s.g8sClient.CoreV1alpha1().DrainerConfigs(podNamespace).Get(podName, metasv1.GetOptions{})
 		if apierrors.IsNotFound(err) {
-			s.logger.LogCtx(ctx, "level", "debug", "message", "did not find drainerconfig")
+			_ = s.logger.LogCtx(ctx, "level", "debug", "message", "did not find drainerconfig")
 			drainerConfig = nil
 		} else if err != nil {
 			return true, microerror.Mask(err)
 		}
 
-		s.logger.LogCtx(ctx, "level", "debug", "message", "found drainerconfig for pod")
+		_ = s.logger.LogCtx(ctx, "level", "debug", "message", "found drainerconfig for pod")
 	}
 
 	{
-		s.logger.LogCtx(ctx, "level", "debug", "message", "finding if node termination has to be defered")
+		_ = s.logger.LogCtx(ctx, "level", "debug", "message", "finding if node termination has to be defered")
 
 		if drainerConfig == nil {
-			s.logger.LogCtx(ctx, "level", "debug", "message", "found node termination should be deferred")
-			s.logger.LogCtx(ctx, "level", "debug", "message", "pod drainerconfig does not exist")
+			_ = s.logger.LogCtx(ctx, "level", "debug", "message", "found node termination should be deferred")
+			_ = s.logger.LogCtx(ctx, "level", "debug", "message", "pod drainerconfig does not exist")
 			return true, nil
 		}
 
 		if drainerConfig.Status.HasDrainedCondition() {
-			s.logger.LogCtx(ctx, "level", "debug", "message", "found node termination does not have to be deferred")
-			s.logger.LogCtx(ctx, "level", "debug", "message", "pod drainerconfig has drained condition")
+			_ = s.logger.LogCtx(ctx, "level", "debug", "message", "found node termination does not have to be deferred")
+			_ = s.logger.LogCtx(ctx, "level", "debug", "message", "pod drainerconfig has drained condition")
 			return false, nil
 		}
 		if drainerConfig.Status.HasTimeoutCondition() {
-			s.logger.LogCtx(ctx, "level", "debug", "message", "found node termination does not have to be deferred")
-			s.logger.LogCtx(ctx, "level", "debug", "message", "pod drainerconfig has timeout condition")
+			_ = s.logger.LogCtx(ctx, "level", "debug", "message", "found node termination does not have to be deferred")
+			_ = s.logger.LogCtx(ctx, "level", "debug", "message", "pod drainerconfig has timeout condition")
 			return false, nil
 		}
 
-		s.logger.LogCtx(ctx, "level", "debug", "message", "found node termination should be deferred")
+		_ = s.logger.LogCtx(ctx, "level", "debug", "message", "found node termination should be deferred")
 		return true, nil
 	}
 }

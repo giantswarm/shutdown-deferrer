@@ -59,7 +59,7 @@ func Test_ShouldDefer(t *testing.T) {
 				Status: v1alpha1.DrainerConfigStatus{
 					Conditions: []v1alpha1.DrainerConfigStatusCondition{
 						v1alpha1.DrainerConfigStatusCondition{
-							LastTransitionTime: v1alpha1.DeepCopyTime{time.Now()},
+							LastTransitionTime: v1alpha1.DeepCopyTime{Time: time.Now()},
 							Status:             v1alpha1.DrainerConfigStatusStatusTrue,
 							Type:               v1alpha1.DrainerConfigStatusTypeDrained,
 						},
@@ -82,7 +82,7 @@ func Test_ShouldDefer(t *testing.T) {
 				Status: v1alpha1.DrainerConfigStatus{
 					Conditions: []v1alpha1.DrainerConfigStatusCondition{
 						v1alpha1.DrainerConfigStatusCondition{
-							LastTransitionTime: v1alpha1.DeepCopyTime{time.Now()},
+							LastTransitionTime: v1alpha1.DeepCopyTime{Time: time.Now()},
 							Status:             v1alpha1.DrainerConfigStatusStatusTrue,
 							Type:               v1alpha1.DrainerConfigStatusTypeTimeout,
 						},
