@@ -5,7 +5,7 @@ var (
 	gitSHA      = "n/a"
 	name        = "shutdown-deferrer"
 	source      = "https://github.com/giantswarm/shutdown-deferrer"
-	version     = "n/a"
+	version     = "0.1.0-dev"
 )
 
 func Description() string {
