@@ -7,9 +7,10 @@ import (
 
 	"github.com/giantswarm/microerror"
 	"github.com/giantswarm/micrologger"
-	"github.com/giantswarm/shutdown-deferrer/service/deferrer"
 	kitendpoint "github.com/go-kit/kit/endpoint"
 	kithttp "github.com/go-kit/kit/transport/http"
+
+	"github.com/giantswarm/shutdown-deferrer/service/deferrer"
 )
 
 const (
